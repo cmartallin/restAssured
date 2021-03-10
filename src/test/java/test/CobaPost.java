@@ -1,10 +1,12 @@
 package test;
 
 import io.restassured.RestAssured;
+import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import java.util.Arrays;
 import model.add_users.AddUser;
+import org.junit.Assert;
 
 public class CobaPost {
 
@@ -34,6 +36,14 @@ public class CobaPost {
 
     response.getBody().prettyPrint();
     System.out.println("Status codenya: " + response.getStatusCode());
+
+    AddUser addUserResponse = response.as(AddUser.class);
+    System.out.println("first namenya adalah: " + addUserResponse.getFirstName());
+
+    // JSON Schema, untuk validasi struktur JSON-nya
+    Assert.assertThat("Json schema is not valid", response.getBody().asString(),
+        JsonSchemaValidator.matchesJsonSchemaInClasspath("add-user-schema.json"));
+
   }
 
   public static AddUser generateAddUserRequestBody() {
@@ -54,5 +64,7 @@ public class CobaPost {
         .nationality("American").gender("FEMALE")
         .hobbies(Arrays.asList("Photoshoot", "Endorsement")).build();
   }
+
+
 
 }
